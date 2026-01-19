@@ -1,0 +1,15 @@
+# Dependências do Composer
+/vendor/
+
+# Arquivos de Dados
+/data/*.json
+/data/*.log
+
+# Arquivos do Sistema Operacional ou IDE
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+
+# Arquivos de ambiente/configurações sensíveis
+.env
