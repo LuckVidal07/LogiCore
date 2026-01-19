@@ -31,7 +31,7 @@ while (true) {
     echo "{$amarelo}3.{$reset} Dar Baixa em Estoque\n";
     echo "{$amarelo}4.{$reset} Conferir Alertas Críticos\n";
     echo "{$amarelo}5.{$reset} Remover Produto\n";
-    echo "{$amarelo}5.{$reset} Sair\n";
+    echo "{$amarelo}6.{$reset} Sair\n";
     echo "\nDigite uma opção {$amarelo}> {$reset}";
 
     $opcao = trim(fgets(STDIN));
