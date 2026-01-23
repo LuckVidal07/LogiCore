@@ -5,95 +5,72 @@ use App\Infrastructure\JsonProdutoRepository;
 use App\Service\LogService;
 use App\Service\EstoqueService;
 
-// Configuração de cores
-$verde = "\033[32m";
-$vermelho = "\033[31m";
-$azul = "\033[34m";
-$amarelo = "\033[33m";
-$cyan = "\033[36m";
-$reset = "\033[0m";
-
+// 1. Inicialização do Motor
 $repo = new JsonProdutoRepository();
 $log = new LogService();
 $sistema = new EstoqueService($repo, $log);
 
-// Limpa a tela do terminal para começar bonito
-echo "\033[2J\033[H";
+// 2. Roteamento: O navegador diz o que quer via URL (ex: ?acao=listar)
+$acao = $_GET['acao'] ?? 'listar';
 
-echo "{$azul}==================================={$reset}\n";
-echo "{$azul}     LOGICORE - GESTÃO ATIVA       {$reset}\n";
-echo "{$azul}==================================={$reset}\n";
+// Se for uma ação de salvar ou baixar, processamos antes de mostrar o HTML
+if ($acao === 'salvar') {
+    $sistema->adicionarProduto($_POST['nome'], (int)$_POST['qtd'], (float)$_POST['preco']);
+    header('Location: index.php?status=sucesso');
+    exit;
+}
 
-while (true) {
-    echo "\n{$cyan}Menu Principal:{$reset}\n";
-    echo "{$amarelo}1.{$reset} Listar Todos os Produtos\n";
-    echo "{$amarelo}2.{$reset} Adicionar/Repor Produto\n";
-    echo "{$amarelo}3.{$reset} Dar Baixa em Estoque\n";
-    echo "{$amarelo}4.{$reset} Conferir Alertas Críticos\n";
-    echo "{$amarelo}5.{$reset} Remover Produto\n";
-    echo "{$amarelo}6.{$reset} Sair\n";
-    echo "\nDigite uma opção {$amarelo}> {$reset}";
+if ($acao === 'baixa') {
+    $sucesso = $sistema->darBaixa($_POST['nome'], (int)$_POST['qtd']);
+    header('Location: index.php?status=' . ($sucesso ? 'sucesso' : 'erro'));
+    exit;
+}
 
-    $opcao = trim(fgets(STDIN));
+if ($acao === 'remover') {
+    $sistema->removerProduto($_GET['nome']);
+    header('Location: index.php?status=sucesso');
+    exit;
+}
+?>
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>Logicore Web - Gestão de Estoque</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+</head>
+<body class="bg-light">
 
-    switch ($opcao) {
-        case '1':
-            echo "\n{$azul}--- RELATÓRIO DE ESTOQUE ---{$reset}";
-            $sistema->listarTudo();
+<nav class="navbar navbar-dark bg-dark mb-4">
+    <div class="container">
+        <a class="navbar-brand" href="index.php">LOGICORE WEB</a>
+        <div class="d-flex">
+            <a href="index.php?acao=listar" class="btn btn-outline-light btn-sm me-2">Estoque</a>
+            <a href="index.php?acao=form_adicionar" class="btn btn-primary btn-sm">+ Novo</a>
+        </div>
+    </div>
+</nav>
+
+<div class="container">
+    <?php
+    // 3. Exibição baseada na ação
+    switch ($acao) {
+        case 'listar':
+            $produtos = $sistema->listarTudo();
+            // Verifique se este caminho está correto no seu PC:
+            include __DIR__ . '/../src/UI/Web/lista_produtos.php';
             break;
 
-        case '2':
-            echo "\n{$azul}--- ENTRADA DE MERCADORIA ---{$reset}\n";
-            echo "Nome do produto: ";
-            $nome = trim(fgets(STDIN));
-            echo "Quantidade: ";
-            $qtd = (int) trim(fgets(STDIN));
-            echo "Preço (ex: 10.50): ";
-            $preco = (float) trim(fgets(STDIN));
-
-            $sistema->adicionarProduto($nome, $qtd, $preco);
+        case 'form_adicionar':
+            include __DIR__ . '/../src/UI/Web/form_produto.php';
             break;
-
-        case '3':
-            echo "\n{$azul}--- SAÍDA DE MERCADORIA ---{$reset}\n";
-            echo "Nome exato do produto: ";
-            $nome = trim(fgets(STDIN));
-            echo "Quantidade a retirar: ";
-            $qtd = (int) trim(fgets(STDIN));
-
-            if ($sistema->darBaixa($nome, $qtd)) {
-                echo "{$verde}✅ Baixa processada!{$reset}\n";
-            } else {
-                echo "{$vermelho}❌ Falha na operação.{$reset}\n";
-            }
-            break;
-
-        case '4':
-            echo "\n{$vermelho}--- PRODUTOS ABAIXO DO LIMITE ---{$reset}\n";
-            $sistema->conferirEstoqueCritico();
-            break;
-
-        case '5':
-            echo "\n{$vermelho}--- REMOVER PRODUTO ---{$reset}\n";
-            echo "Digite o nome do produto que deseja EXCLUIR: ";
-            $nome = trim(fgets(STDIN));
-
-            echo "Tem certeza que deseja remover '$nome'? (s/n): ";
-            $confirmacao = strtolower(trim(fgets(STDIN)));
-
-            if ($confirmacao === 's') {
-                $sistema->removerProduto($nome);
-            } else {
-                echo "Operação cancelada.\n";
-            }
-            break;
-
-        case '6':
-            echo "\n{$azul}Encerrando sistema...{$reset}\n";
-            exit;
-
+            
         default:
-            echo "{$vermelho}Opção inválida!{$reset}\n";
+            echo "Ação não encontrada.";
             break;
     }
-}
+    ?>
+</div>
+
+</body>
+</html>
