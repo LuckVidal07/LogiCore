@@ -53,16 +53,14 @@ if ($acao === 'remover') {
 
 <div class="container">
     <?php
-    // 3. Exibição baseada na ação
     switch ($acao) {
         case 'listar':
             $produtos = $sistema->listarTudo();
-            // Verifique se este caminho está correto no seu PC:
-            include __DIR__ . '/../src/UI/Web/lista_produtos.php';
+            include __DIR__ . '/../src/UI/Web/listar_produtos.php';
             break;
 
         case 'form_adicionar':
-            include __DIR__ . '/../src/UI/Web/form_produto.php';
+            include __DIR__ . '/../src/UI/Web/form_produtos.php';
             break;
             
         default:
