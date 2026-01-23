@@ -1,33 +1,74 @@
-# 📦 LogiCore - Sistema de Gestão de Estoque
+# 📦 LogiCore - Gestão Ativa de Estoque
 
-O **LogiCore** é uma aplicação de terminal (CLI) desenvolvida em PHP moderno para demonstrar o uso de arquitetura de software avançada, focando em manutenibilidade, testabilidade e separação de responsabilidades.
+O **LogiCore** é um ecossistema de gerenciamento de inventário desenvolvido em PHP, utilizando padrões de arquitetura limpa (**Clean Architecture**). O sistema permite o controle total de mercadorias através de duas interfaces distintas (CLI e Web), compartilhando o mesmo núcleo de regras de negócio.
 
-## 🛠️ Tecnologias e Padrões Utilizados
+---
 
-Este projeto não utiliza frameworks, sendo construído do zero para aplicar:
+## 🚀 Funcionalidades
 
-* **PHP 8.x + Composer** (Autoloading PSR-4)
-* **Domain-Driven Design (DDD) Lite**: Uso de Entidades para encapsular regras de negócio.
-* **Repository Pattern**: Abstração da camada de persistência de dados (JSON).
-* **Dependency Injection**: Injeção de dependências via construtor para baixo acoplamento.
-* **Service Layer**: Camada de serviço para coordenação das operações.
-* **Logging Service**: Auditoria de todas as movimentações do sistema.
+* **Multi-Interface:** Opere via Terminal (CLI) ou Navegador (Web).
+* **Persistência JSON:** Armazenamento leve e rápido com indexação para buscas.
+* **Controle de Estoque Crítico:** Alertas visuais automáticos para produtos abaixo do limite (5 unidades).
+* **Auditoria de Logs:** Registro de todas as entradas, saídas e exclusões.
+* **Dashboard Visual:** Gráficos interativos na interface Web para análise de níveis de estoque usando Chart.js.
 
-## 🏗️ Arquitetura do Projeto
+## 🛠️ Arquitetura e Padrões
 
-A estrutura segue os princípios do **SOLID**, dividida em:
+O projeto foi construído focando em desacoplamento e manutenibilidade:
+* **Pattern Repository:** Isolamento da lógica de persistência de dados.
+* **Service Layer:** Centralização das regras de negócio.
+* **PSR-4 Autoloading:** Organização profissional de classes via Composer.
+* **Dependency Injection:** Injeção de dependências para facilitar testes e expansões.
 
-1.  **Entity**: Objeto de domínio `Produto` que garante a integridade dos dados.
-2.  **Contract**: Interfaces que definem os contratos dos repositórios.
-3.  **Infrastructure**: Implementação concreta da persistência (JSON).
-4.  **Service**: Lógica de negócio (baixas, reposição, alertas críticos).
+## 📁 Estrutura do Projeto
 
+```text
+├── bin/                # Ponto de entrada da interface CLI
+├── data/               # Armazenamento em formato JSON
+├── public/             # Ponto de entrada da interface Web (Front Controller)
+├── src/
+│   ├── Contract/       # Interfaces e Contratos (Abstração)
+│   ├── Entity/         # Classes de Domínio (Produto)
+│   ├── Infrastructure/ # Implementação do Repositório (JSON)
+│   ├── Service/        # Lógica de Negócio e Auditoria (Logs)
+│   └── UI/             # Camadas de Visualização
+│       ├── Console/    # Interface Shell do Terminal
+│       └── Web/        # Templates HTML/Bootstrap
+└── vendor/             # Dependências do Composer
+```
 
+## ⚙️ Como Executar
+Pré-requisitos
+PHP 8.0 ou superior
 
-## 🚀 Como Executar
+## 📥 Instalação
 
-1. Clone o repositório.
-2. Execute `composer install` para gerar o autoloader.
-3. Inicie a aplicação com:
+Siga os passos abaixo para configurar o projeto em sua máquina local:
+
+1. **Clone o repositório:**
    ```bash
-   php public/index.php
+   git clone [https://github.com/LuckVidal07/LogiCore.git](https://github.com/LuckVidal07/LogiCore.git)
+   ```
+2. **Entre na pasta do projeto:**
+```bash
+cd LogiCore
+```
+3. **Instale as dependências e gere o autoload:**
+```bash
+composer install
+```
+
+## 💻 Executando o Terminal (CLI)
+
+Para abrir a interface de linha de comando, execute o seguinte comando:
+```
+php bin/Logicore.php
+```
+## 🌐 Executando a Interface Web
+```bash
+php -S localhost:8000 -t public
+```
+
+Após iniciar o servidor, acesse:
+
+http://localhost:8000
